@@ -1,68 +1,85 @@
-# Gem of Gemma 💎
+# Duke — the DirectDesk phone application
 
-### On-Device AI Assistant for Android — Powered by Gemma 4
+Duke is the DirectDesk application for Android telephones. Duke puts the
+DirectDesk assistant on the telephone in Solomon's pocket: Duke talks with
+Solomon by text and by voice, Duke runs a language model directly on the
+telephone so the conversation happens on the device itself, Duke exchanges
+messages with the DirectDesk crew through the postbox, and Duke shows the
+crew's work as a living task list that Solomon can rearrange by hand. Duke
+is the telephone face of DirectDesk — the same Duke who manages the crew
+on the computer, speaking from the phone.
 
-![Android](https://img.shields.io/badge/Android-14%2B-3DDC84?logo=android&logoColor=white)
-![Kotlin](https://img.shields.io/badge/Kotlin-2.2-7F52FF?logo=kotlin&logoColor=white)
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-![LiteRT-LM](https://img.shields.io/badge/LiteRT--LM-0.10.2-FF6F00?logo=google&logoColor=white)
+What Duke does
+--------------
 
-An open-source Android app showcasing **on-device AI inference** with [Gemma 4](https://blog.google/technology/developers/gemma-4/) and [LiteRT-LM](https://ai.google.dev/edge/litert-lm). Chat, understand images, and control your phone — all running locally with **zero internet** after the initial model download. Entirely vibe coded with [GitHub Copilot](https://github.com/features/copilot).
+- Duke converses. Solomon types or speaks to Duke, and Duke answers with
+  text that can also be spoken aloud. Duke shows the model's thinking
+  while the answer forms, and Duke keeps the conversation on the
+  telephone.
+- Duke runs the model on the telephone. Duke's model is named in one
+  configuration line, marked off by a banner so the line is easy to find:
+  the model is Qwen3_4b_thinking_dynamic_wi4b32_afp32.litertlm. Duke
+  either downloads the model from the address on that line or loads the
+  model from the telephone's own storage. In Version 4 the download
+  address on the configuration line is blank, so Duke loads the model
+  from the telephone's storage; filling that one line in a later version
+  turns the download on without touching anything else in Duke.
+- Duke talks to the crew through the postbox. Duke sends and receives
+  messages through the Apps Script postbox, addressed to Duke and to
+  Kevin — Operator, so a question asked on the telephone reaches the
+  crew on the computer and the answer travels back the same road.
+- Duke shows the work as tasks. The Tasks screens show what comes next,
+  what is being processed, and what is completed. Solomon can press and
+  hold a task, drag the task to a new place in the order, and release
+  the task there, and Duke keeps the new order.
+- Duke carries a voice switch on the face of the application. When the
+  voice switch is off, Duke stops speaking — a flip of the switch cuts
+  speech off at once, even in the middle of a piece — and everything
+  Duke has to say stays as text on the screen. The switch's state
+  persists when the application closes, and every flip of the switch is
+  receipted to Kevin — Operator.
+- Duke wears the DirectDesk identity. The application name is Duke, the
+  application identifier is net.directdesk.duke, the colors are the
+  DirectDesk colors — navy, teal, and green — and the application icon
+  is a clean Duke lettermark. Duke has no mascot.
 
-No cloud APIs. No subscriptions. No data leaving your device. This is private, portable AI running on your phone's hardware.
+How to use Duke
+---------------
 
-> **Keywords:** Gemma 4, on-device LLM, Android AI, LiteRT-LM, offline AI assistant, on-device inference, Jetpack Compose, function calling, multimodal AI, object detection, OCR, image captioning, visual question answering, speech to text, phone automation, Material 3, Kotlin, open source
+1. Install Duke on an Android telephone.
+2. Open Duke and give Duke the model: either let Duke load the model
+   file from the telephone's storage, or, once the download address is
+   set on the model configuration line in a later version, let Duke
+   download the model.
+3. Talk to Duke on the chat screen — type a message or use voice input,
+   and read or listen to Duke's answer.
+4. Flip the voice switch on the face of the application at any time to
+   turn Duke's speech on or off.
+5. Open the Tasks screens to see what the crew will do next, what the
+   crew is processing, and what the crew has completed, and drag tasks
+   by a long press to change the order.
+6. Open the postbox screen to exchange messages with Duke and Kevin —
+   Operator through the Apps Script postbox.
 
-## 📸 Screenshots
+Building Duke
+-------------
 
-<p align="center">
-  <img src="screenshots/chat-home.png" width="220" alt="Gem of Gemma chat home screen with suggestion chips" />
-  <img src="screenshots/chat-response.png" width="220" alt="Gemma 4 native function calling - set alarm tool" />
-  <img src="screenshots/thinking-mode.png" width="220" alt="Gemma 4 thinking mode with chain of thought reasoning" />
-</p>
-<p align="center">
-  <img src="screenshots/image-caption.png" width="220" alt="On-device OCR and image understanding with Gemma 4" />
-  <img src="screenshots/tool-picker.png" width="220" alt="22 toggleable phone automation tools" />
-</p>
+Duke builds with the Gradle wrapper that travels with this repository,
+and the Duke APK Build workflow in GitHub Actions builds the application
+package on every dispatch and keeps the finished package as the
+Duke_APK_V4 artifact. Version 4 is version code 40, version name 4.
 
-## What It Can Do
+Where Duke comes from
+---------------------
 
-- **Chat** — Natural conversation with real-time token streaming and visible thinking/reasoning, powered by Gemma 4 E2B running entirely on-device
-- **See** — Multimodal image understanding from camera or gallery: describe scenes, detect objects with bounding boxes, read text (OCR), answer visual questions
-- **Control your phone** — 22 toggleable tools via LiteRT-LM's native ToolSet API: send SMS, make calls, set alarms, toggle flashlight, adjust volume/brightness, navigate, control media, and more
-- **Voice input** — On-device speech recognition for hands-free interaction
-- **Persistent conversations** — Chat history saved locally, multiple conversations supported
-
-## Getting Started
-
-```bash
-git clone https://github.com/ajay-sainy/GemOfGemma.git
-cd GemOfGemma
-./gradlew installDebug
-```
-
-**Requirements:** Android Studio, JDK 17+, Android device with 4GB+ RAM, ~3GB storage.
-
-On first launch, the app downloads **Gemma 4 E2B** from HuggingFace (~2.5 GB, one-time). After that, it runs fully offline — no internet needed.
-
-## How It Works
-
-The app uses [LiteRT-LM](https://ai.google.dev/edge/litert-lm) to run Google's Gemma 4 model directly on Android hardware. Key technical highlights:
-
-- **Streaming inference** via `Conversation.sendMessageAsync()` — tokens appear in real-time
-- **Native function calling** via LiteRT-LM's `ToolSet` API with `@Tool` annotations
-- **Thinking mode** with `Channel("thinking")` — visible chain-of-thought reasoning
-- **Format-based response parsing** — model outputs `` ```json `` with `box_2d` for object detection (following [Google's official approach](https://ai.google.dev/gemma/docs/capabilities/vision/image))
-- **Multi-module architecture** — `:app`, `:ui`, `:ai`, `:core`, `:actions`, `:camera`, `:voice`, `:accessibility`
-
-## Model License
-
-The Gemma model is subject to the [Gemma Terms of Use](https://ai.google.dev/gemma/terms). This project's source code is [Apache 2.0](LICENSE).
-
-## Contributing
-
-Contributions welcome — open an issue first to discuss, then submit a PR.
-
-## Acknowledgments
-
-[Google DeepMind](https://deepmind.google/) (Gemma) · [Google AI Edge](https://ai.google.dev/edge) (LiteRT-LM) · [Jetpack Compose](https://developer.android.com/compose)
+Duke is built from the open-source application GemOfGemma by
+ajay-sainy, at version 1.0.3, used under the Apache License, Version
+2.0. The license travels with this repository in the LICENSE file, and
+the provenance is recorded in the code. The base application provided
+the on-device inference foundation — the LiteRT-LM engine, the chat
+interface, the camera and voice pieces — and the DirectDesk work on
+top of that foundation is what makes the application Duke: the
+DirectDesk identity and colors, the Duke lettermark icon, the model
+configuration line naming the Qwen model, the Apps Script postbox
+communication addressed to Duke and Kevin — Operator, the Tasks
+screens, and the voice switch on the face of the application.
