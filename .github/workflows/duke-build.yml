@@ -14,8 +14,15 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install the Android SDK packages the build needs
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          export ANDROID_SDK_ROOT=$ANDROID_HOME
+          SDKMANAGER=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
+          if [ ! -x "$SDKMANAGER" ]; then SDKMANAGER=$(ls $ANDROID_HOME/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1); fi
+          echo "sdkmanager: $SDKMANAGER"
+          yes | $SDKMANAGER --licenses > /dev/null || true
+          $SDKMANAGER "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - name: Build the Duke APK (debug)
         run: |
           chmod +x ./gradlew
