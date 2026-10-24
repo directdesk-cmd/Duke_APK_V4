@@ -12,11 +12,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.gemofgemma"
+        applicationId = "net.directdesk.duke"
         minSdk = 31
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0.3"
+        versionCode = 40
+        versionName = "4"
     }
 
     buildTypes {

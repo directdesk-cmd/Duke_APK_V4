@@ -1,39 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Duke lettermark: a geometric "D" in DirectDesk teal; the counter is cut
+     out (even-odd) so the navy adaptive background shows through.
+     Duke fork change - replaces the base project's gemstone mark. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-
-    <!-- Gemstone shape - a faceted gem -->
-    <!-- Main gem body -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,28 L72,44 L54,80 L36,44 Z" />
-
-    <!-- Top facet (lighter) -->
-    <path
-        android:fillColor="#E8DEF8"
-        android:pathData="M54,28 L72,44 L54,48 L36,44 Z" />
-
-    <!-- Left facet -->
-    <path
-        android:fillColor="#D0BCFF"
-        android:pathData="M36,44 L54,48 L54,80 Z" />
-
-    <!-- Right facet -->
-    <path
-        android:fillColor="#F3EEFF"
-        android:pathData="M72,44 L54,48 L54,80 Z" />
-
-    <!-- Sparkle top-right -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M70,30 L72,26 L74,30 L78,32 L74,34 L72,38 L70,34 L66,32 Z" />
-
-    <!-- Sparkle small -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M32,36 L33,34 L34,36 L36,37 L34,38 L33,40 L32,38 L30,37 Z" />
-
+        android:fillColor="#0097A7"
+        android:fillType="evenOdd"
+        android:pathData="M36,30 L57,30 A24,24 0 0 1 57,78 L36,78 Z M46,41 L55,41 A13,13 0 0 1 55,67 L46,67 Z" />
 </vector>

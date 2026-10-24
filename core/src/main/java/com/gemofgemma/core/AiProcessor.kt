@@ -57,6 +57,14 @@ interface AiProcessor {
     /** Delete the model from disk. */
     suspend fun deleteModel(): Result<Unit>
 
+    /**
+     * Duke addition: import a model file picked from device storage
+     * (load-from-storage, a first-class path - Solomon's test protocol,
+     * 2026-10-24). The file lands under the configured model name, so
+     * the engine loads it exactly as if it had been downloaded.
+     */
+    suspend fun importModelFromStorage(uri: android.net.Uri): Result<Unit>
+
     /** Size in bytes of the model on disk (0 if not downloaded). */
     fun getModelSizeOnDisk(): Long
 

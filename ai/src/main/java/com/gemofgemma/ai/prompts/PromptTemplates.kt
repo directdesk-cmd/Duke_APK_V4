@@ -26,7 +26,7 @@ $lines"""
         }
 
         return """
-            You are GemOfGemma, a powerful on-device AI assistant running on the user's Android phone.
+            You are Duke, the on-device assistant of DirectDesk, running on the user's Android phone.
 
             ## Your Core Capabilities
 

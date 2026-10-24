@@ -12,13 +12,17 @@ import androidx.navigation.compose.rememberNavController
 import com.gemofgemma.ui.chat.ChatScreen
 import com.gemofgemma.ui.chat.ImageCaptureScreen
 import com.gemofgemma.ui.onboarding.OnboardingScreen
+import com.gemofgemma.ui.postbox.PostboxScreen
 import com.gemofgemma.ui.settings.SettingsScreen
+import com.gemofgemma.ui.tasks.TasksScreen
 
 sealed class Screen(val route: String) {
     data object Chat : Screen("chat")
     data object Capture : Screen("capture")
     data object Settings : Screen("settings")
     data object Onboarding : Screen("onboarding")
+    data object Tasks : Screen("tasks")
+    data object Postbox : Screen("postbox")
 }
 
 @Composable
@@ -51,8 +55,26 @@ fun NavGraph() {
                 },
                 onNavigateToCapture = {
                     navController.navigate(Screen.Capture.route)
+                },
+                onNavigateToTasks = {
+                    navController.navigate(Screen.Tasks.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToPostbox = {
+                    navController.navigate(Screen.Postbox.route) {
+                        launchSingleTop = true
+                    }
                 }
             )
+        }
+
+        composable(Screen.Tasks.route) {
+            TasksScreen()
+        }
+
+        composable(Screen.Postbox.route) {
+            PostboxScreen()
         }
 
         composable(Screen.Capture.route) {

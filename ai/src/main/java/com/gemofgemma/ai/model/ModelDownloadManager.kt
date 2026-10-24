@@ -1,6 +1,7 @@
 package com.gemofgemma.ai.model
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +66,20 @@ class ModelDownloadManager @Inject constructor(
 
         if (_isDownloading.value) {
             return@withContext Result.failure(Exception("Download already in progress"))
+        }
+
+        // Duke addition: with no download address configured yet, say so
+        // plainly instead of failing inside the HTTP call - the model
+        // arrives through load-from-storage in Settings until the one
+        // configuration block names a canonical address.
+        if (MODEL_URL.isBlank()) {
+            return@withContext Result.failure(
+                Exception(
+                    "No download address is configured yet - load the model " +
+                        "from storage in Settings, or set the address in the " +
+                        "model configuration block."
+                )
+            )
         }
 
         _isDownloading.value = true
@@ -141,6 +156,45 @@ class ModelDownloadManager @Inject constructor(
         }
     }
 
+    /**
+     * Duke addition (change 1): load-from-storage, a first-class path.
+     * Copies a model file picked on the device into the models folder
+     * under the configured model name, so the engine loads it through
+     * the exact same path as a downloaded file.
+     */
+    suspend fun importModelFromUri(uri: Uri): Result<File> = withContext(Dispatchers.IO) {
+        try {
+            modelDir.mkdirs()
+            val input = context.contentResolver.openInputStream(uri)
+                ?: return@withContext Result.failure(
+                    Exception("Could not open the picked file")
+                )
+            input.use { stream ->
+                FileOutputStream(tempFile).use { output ->
+                    stream.copyTo(output)
+                }
+            }
+            if (tempFile.length() <= 0L) {
+                tempFile.delete()
+                return@withContext Result.failure(Exception("The picked file was empty"))
+            }
+            if (modelFile.exists()) {
+                modelFile.delete()
+            }
+            if (!tempFile.renameTo(modelFile)) {
+                return@withContext Result.failure(
+                    Exception("Failed to finalize the imported model file")
+                )
+            }
+            _isModelAvailable.value = true
+            Log.i(TAG, "Model imported from storage: ${modelFile.absolutePath}")
+            Result.success(modelFile)
+        } catch (e: Exception) {
+            Log.e(TAG, "Model import failed", e)
+            Result.failure(e)
+        }
+    }
+
     suspend fun deleteModel(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             tempFile.delete()
@@ -164,9 +218,20 @@ class ModelDownloadManager @Inject constructor(
 
     companion object {
         private const val TAG = "ModelDownloadManager"
-        private const val MODEL_FILENAME = "gemma-4-E2B-it.litertlm"
-        const val MODEL_SIZE_BYTES = 2_770_000_000L
-        const val MODEL_URL =
-            "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm"
+
+        // =====================================================================
+        // DUKE DEFAULT MODEL - THE ONE CONFIGURATION BLOCK FOR THE MODEL.
+        // To change the application's model, edit ONLY these three values:
+        // the download address, the file name it lands under, and its size.
+        // Nothing else in the build hard-codes the model. The default below
+        // targets Qwen3_4b_thinking_dynamic_wi4b32_afp32.litertlm first
+        // (Solomon's test protocol, 2026-10-24). The download address is set
+        // when a canonical copy of the file is designated; until then the
+        // load-from-storage path in Settings is the way the file arrives.
+        // =====================================================================
+        const val MODEL_URL = ""
+        const val MODEL_FILENAME = "Qwen3_4b_thinking_dynamic_wi4b32_afp32.litertlm"
+        // 0 = size learned from the server at download time.
+        const val MODEL_SIZE_BYTES = 0L
     }
 }

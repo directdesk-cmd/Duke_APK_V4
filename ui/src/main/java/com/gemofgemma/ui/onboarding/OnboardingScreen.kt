@@ -153,7 +153,7 @@ private fun WelcomePage() {
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "GemOfGemma",
+            text = "Duke",
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -171,7 +171,7 @@ private fun WelcomePage() {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "Powered by Gemma 4 — everything runs locally.\nYour data never leaves your device.",
+            text = "Powered by the Duke model — everything runs locally.\nYour data never leaves your device.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -289,7 +289,7 @@ private fun PermissionsPage(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "GemOfGemma needs a few permissions to help you effectively.",
+            text = "Duke needs a few permissions to help you effectively.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -405,7 +405,7 @@ private fun ModelPage(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Gemma 4 E2B is downloaded and ready to use.",
+                text = "The Duke model is downloaded and ready to use.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -434,7 +434,7 @@ private fun ModelPage(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Gemma 4 E2B needs to be downloaded once.",
+                text = "The Duke model needs to be downloaded once.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -510,7 +510,7 @@ private fun ModelPage(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Gemma 4 E2B",
+                            text = "Duke model",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold
                         )

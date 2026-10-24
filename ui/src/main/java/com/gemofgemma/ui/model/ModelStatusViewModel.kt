@@ -47,6 +47,16 @@ class ModelStatusViewModel @Inject constructor(
         }
     }
 
+    /** Duke addition: load-from-storage import (change 1). */
+    fun importModel(uri: android.net.Uri) {
+        viewModelScope.launch {
+            _downloadError.value = null
+            aiProcessor.importModelFromStorage(uri).onFailure { e ->
+                _downloadError.value = e.message ?: "Model import failed"
+            }
+        }
+    }
+
     fun getModelSizeOnDisk(): Long = aiProcessor.getModelSizeOnDisk()
 
     fun hasPartialDownload(): Boolean = aiProcessor.hasPartialDownload()

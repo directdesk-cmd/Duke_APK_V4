@@ -133,6 +133,9 @@ class GemmaServiceConnector @Inject constructor(
     override suspend fun deleteModel(): Result<Unit> =
         modelDownloadManager.deleteModel()
 
+    override suspend fun importModelFromStorage(uri: android.net.Uri): Result<Unit> =
+        modelDownloadManager.importModelFromUri(uri).map { }
+
     override fun getModelSizeOnDisk(): Long =
         modelDownloadManager.getModelSizeOnDisk()
 

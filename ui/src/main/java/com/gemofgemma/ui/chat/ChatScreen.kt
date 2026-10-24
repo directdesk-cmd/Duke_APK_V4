@@ -85,6 +85,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.gemofgemma.core.postbox.PostboxClient
+import com.gemofgemma.core.postbox.PostboxStore
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -127,7 +131,9 @@ fun ChatScreen(
     onCapturedImageConsumed: () -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel(),
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToCapture: () -> Unit = {}
+    onNavigateToCapture: () -> Unit = {},
+    onNavigateToTasks: () -> Unit = {},
+    onNavigateToPostbox: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -222,13 +228,13 @@ fun ChatScreen(
             ) {
                 Icon(
                     Icons.Default.SmartToy,
-                    contentDescription = "Gem of Gemma",
+                    contentDescription = "Duke",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Gem of Gemma",
+                    text = "Duke",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -255,6 +261,26 @@ fun ChatScreen(
                     )
                 }
                 IconButton(
+                    onClick = onNavigateToTasks,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Checklist,
+                        contentDescription = "Tasks",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(
+                    onClick = onNavigateToPostbox,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Mail,
+                        contentDescription = "Postbox",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(
                     onClick = onNavigateToSettings,
                     modifier = Modifier.size(36.dp)
                 ) {
@@ -267,6 +293,43 @@ fun ChatScreen(
             }
         }
         // ── Model offline banner ─────────────────────────────────
+        // ── Duke addition: the Puppy voice switch ────────────────
+        // One toggle on the main face. OFF cuts Puppy's speech in
+        // progress and mutes its queue; the flip rides the postbox as a
+        // control command and is receipted into Kevin's record family.
+        var voiceOn by remember { mutableStateOf(PostboxStore.isVoiceEnabled(context)) }
+        val voiceScope = rememberCoroutineScope()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.VolumeUp,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Puppy voice", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                if (voiceOn) "On" else "Off",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Switch(
+                checked = voiceOn,
+                onCheckedChange = { on ->
+                    voiceOn = on
+                    voiceScope.launch {
+                        runCatching { PostboxClient(context).setVoiceEnabled(on) }
+                    }
+                }
+            )
+        }
         AnimatedVisibility(
             visible = !uiState.isModelAvailable,
             enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),     
@@ -332,7 +395,7 @@ fun ChatScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Powered by Gemma 4 — running entirely on your device",
+                        text = "Duke — running entirely on your device",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant      
                     )
@@ -662,7 +725,7 @@ private fun ChatBubble(message: ChatMessage, showInferenceStats: Boolean = true)
                 IconButton(
                     onClick = {
                         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("GemOfGemma", message.content))
+                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Duke", message.content))
                         copied = true
                     },
                     modifier = Modifier.size(28.dp)

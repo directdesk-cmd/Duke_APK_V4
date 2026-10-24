@@ -15,10 +15,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gemofgemma.core.model.ToolCategory
 import com.gemofgemma.core.model.ToolDefinition
+import com.gemofgemma.core.postbox.PostboxStore
 import com.gemofgemma.ui.model.ModelStatusViewModel
 import com.gemofgemma.ui.model.formatSize
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -39,6 +44,12 @@ fun SettingsScreen(
     val downloadedBytes by viewModel.downloadedBytes.collectAsStateWithLifecycle()
     val totalBytes by viewModel.totalBytes.collectAsStateWithLifecycle()
     val downloadError by viewModel.downloadError.collectAsStateWithLifecycle()
+
+    // Duke addition (change 1): the load-from-storage picker.
+    val context = LocalContext.current
+    val modelPicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri -> if (uri != null) viewModel.importModel(uri) }
 
     val toolsByCategory = remember {
         ToolDefinition.ALL_TOOLS.groupBy { it.category }
@@ -62,7 +73,7 @@ fun SettingsScreen(
             ) {
                 Column {
                     ListItem(
-                        headlineContent = { Text("Gemma 4 E2B", fontWeight = FontWeight.Medium) },
+                        headlineContent = { Text("Duke model", fontWeight = FontWeight.Medium) },
                         supportingContent = {
                             Column {
                                 when {
@@ -160,12 +171,75 @@ fun SettingsScreen(
                         leadingContent = { Icon(Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                    ListItem(
+                        headlineContent = { Text("Load model from storage") },
+                        supportingContent = {
+                            Text("Copy a model file from this device into Duke. It lands under the configured model name - a first-class path, not a fallback.")
+                        },
+                        leadingContent = { Icon(Icons.Default.FolderOpen, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                        trailingContent = {
+                            Button(onClick = { modelPicker.launch(arrayOf("*/*")) }) {
+                                Text("Choose file")
+                            }
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
                 }
             }
         }
 
         // ── Autonomous Tools (Dynamic Opt-In) ──────────────────────────────────────────
         
+        // ── Postbox (Duke addition, change 2) ──────────────────────
+        item { SectionHeader(title = "Postbox (Puppy)", modifier = Modifier.padding(bottom = 8.dp)) }
+        item {
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    var secret by remember { mutableStateOf(PostboxStore.getSecret(context)) }
+                    var secretSaved by remember { mutableStateOf(false) }
+                    Text(
+                        "Mailbox secret",
+                        fontWeight = FontWeight.Medium,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        "Typed once. Duke and Kevin are reached through the estate postbox; the voice switch lives on the chat screen.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = secret,
+                        onValueChange = { secret = it; secretSaved = false },
+                        label = { Text("Shared secret") },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Button(onClick = {
+                            PostboxStore.setSecret(context, secret)
+                            secretSaved = true
+                        }) { Text("Save secret") }
+                        if (secretSaved) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Saved ✓",
+                                color = MaterialTheme.colorScheme.tertiary,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
         toolsByCategory.forEach { (category, tools) ->
             item { SectionHeader(title = category.title, modifier = Modifier.padding(bottom = 8.dp)) }
             item {
